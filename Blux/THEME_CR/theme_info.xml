@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<theme-info xmlns="http://www.simplemachines.org/xml/theme-info" xmlns:smf="http://www.simplemachines.org/">
+	<name>Blux by SMFPacks</name>
+	<author name="SMFPacks.com">contact@smfpacks.com</author>
+	<website>http://www.smfpacks.com/</website>
+	<layers>html,body</layers>
+	<templates>index</templates>
+	<based-on></based-on>
+</theme-info>

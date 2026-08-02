@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+<id>NIBOGO:MobileThemeSelector</id>
+<name>Mobile Theme Selector</name>
+<version>1.0</version>
+	<file name="$sourcedir/ManageSettings.php">
+		<operation>
+			<search position="replace"><![CDATA[// Mod authors, once again, if you have a whole section to add do it AFTER this line, and keep a comma at the end.]]></search>
+			<add><![CDATA['mobile_theme' => 'MobileThemeSelector',
+		// Mod authors, once again, if you have a whole section to add do it AFTER this line, and keep a comma at the end.]]></add>
+		</operation>
+	</file>	
+	<file name="$sourcedir/Admin.php">
+		<operation>
+			<search position="replace"><![CDATA['general' => array($txt['mods_cat_modifications_misc']),]]></search>
+			<add><![CDATA['general' => array($txt['mods_cat_modifications_misc']),
+						'mobile_theme' => array($txt['select_theme_for_mobile_title']),]]></add>
+		</operation>
+		<operation>
+			<search position="end" />
+			<add><![CDATA[function MobileThemeSelector($return_config = false)
+{    
+	global $txt, $scripturl, $context, $sourcedir, $modSettings;
+	
+	$context[$context['admin_menu_name']]['tab_data']['title'] = $txt['select_theme_for_mobile_title'];
+	$context[$context['admin_menu_name']]['tab_data']['description'] = $txt['mobile_theme_selector'];	
+	
+	require_once($sourcedir . '/ManageServer.php');
+    require_once($sourcedir . '/Themes.php');
+    ThemeList();
+
+    // Set title and default sub-action.
+    $context['sub_template'] = 'show_settings';
+    $context['page_title'] = $txt['select_theme_for_mobile_title'];	
+	
+	$config_vars = array(
+	    array('check', 'enable_mobile_theme_selector'),
+	);
+	
+	$themes = array();
+	foreach ($context['themes'] as $i => $theme)
+		$themes[$theme['id']] = $theme['name'];
+	
+	$config_vars[] = array('select', 'mobile_theme_selector', $themes);
+	
+	if (isset($_GET['save']))
+	{
+		saveDBSettings($config_vars);
+		redirectexit('action=admin;area=modsettings;sa=mobile_theme');
+	}
+	$context['post_url'] = $scripturl .'?action=admin;area=modsettings;sa=mobile_theme;save';	
+	prepareDBSettingContext($config_vars);		
+}]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/Load.php">
+		<operation>
+			<search position="replace"><![CDATA[// The theme was specified by the board.
+	elseif (!empty($board_info['theme']))
+		$id_theme = $board_info['theme'];]]></search>
+			<add><![CDATA[// Mobile theme selector!
+	elseif (!empty($modSettings['enable_mobile_theme_selector']) && isset($modSettings['mobile_theme_selector']) && preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|iphone|ipod|ipad|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]))
+		$id_theme = $modSettings['mobile_theme_selector'];
+	// The theme was specified by the board.
+	elseif (!empty($board_info['theme']))
+		$id_theme = $board_info['theme'];]]></add>
+		</operation>
+	</file> 
+	<file name="$languagedir/Modifications.english.php" error="skip">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+// Mobile Theme Selector
+$txt['enable_mobile_theme_selector'] = 'Enable mobile theme';
+$txt['select_theme_for_mobile_title'] = 'Mobile Theme Selector';
+$txt['mobile_theme_selector'] = 'Select a theme to be enabled by default for mobile devices';
+]]></add>
+		</operation>
+	</file>	
+        <file name="$languagedir/Modifications.english-utf8.php" error="skip">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+// Mobile Theme Selector
+$txt['enable_mobile_theme_selector'] = 'Enable mobile theme';
+$txt['select_theme_for_mobile_title'] = 'Mobile Theme Selector';
+$txt['mobile_theme_selector'] = 'Select a theme to be enabled by default for mobile devices';
+]]></add>
+		</operation>
+	</file>	
+</modification>
